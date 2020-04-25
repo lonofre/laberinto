@@ -1,0 +1,17 @@
+
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:28.2-jre'
+}
+
+application {
+    mainClassName = 'mx.unam.fciencias.edd.App'
+}
