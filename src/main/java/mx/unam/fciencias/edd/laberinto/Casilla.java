@@ -1,32 +1,38 @@
 package mx.unam.fciencias.edd.laberinto;
 
+import java.io.Serializable;
 import java.util.Random;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import mx.unam.fciencias.edd.util.Lista;
 
 /**
- * Una Casilla es un cuadro en el Laberinto, la cual tiene posición y puede tener hasta cuatro paredes
+ * Una Casilla es un cuadro en el Laberinto, la cual tiene posición y puede
+ * tener hasta cuatro paredes
  */
-public class Casilla {
+public class Casilla implements Serializable {
+
+    private static final long serialVersionUID = -5759297859583844470L;
 
     private enum PuntoCardinal {
         NORTE, SUR, ESTE, OESTE
     }
 
     /**
-     * Indica si la existe la Pared Norte
+     * Indica si está habilitada la Pared Norte
      */
     private boolean norte;
     /**
-     * Indica si la existe la Pared Sur
+     * Indica si está habilitada la Pared Sur
      */
     private boolean sur;
     /**
-     * Indica si la existe la Pared Este
+     * Indica si está habilitada la Pared Este
      */
     private boolean este;
     /**
-     * Indica si la existe la Pared Oeste
+     * Indica si está habilitada la Pared Oeste
      */
     private boolean oeste;
     /**
@@ -40,6 +46,7 @@ public class Casilla {
     /**
      * El laberinto donde pertenece la cuadrícula
      */
+    @JsonIgnore
     private Laberinto laberinto;
     /**
      * Marca si la Casilla ya ha sido visitada
@@ -71,6 +78,7 @@ public class Casilla {
 
     /**
      * Muestra si no hay vecinos sin visitar
+     * 
      * @return true si no hay vecinos sin visitar, false en caso contrario
      */
     public boolean noHayVecinosSinVisitar() {
@@ -86,7 +94,27 @@ public class Casilla {
     }
 
     /**
+     * Muestra si no hay vecinos sin visitar
+     * 
+     * @return true si no hay vecinos sin visitar, false en caso contrario
+     */
+    public boolean noHayVecinosSinVisitarConPaso() {
+        Lista<Casilla> vecinos = obtenerVecinos();
+        boolean todosVisitados = true;
+        for (Casilla vecino : vecinos) {
+            if (!vecino.fueVisitado() && hayPaso(vecino)) {
+                todosVisitados = false;
+                break;
+            }
+        }
+        return todosVisitados;
+    }
+
+
+
+    /**
      * Obtiene un vecino al azar que no ha sido visitado
+     * 
      * @return una Casilla adyacente que no ha sido visitada
      */
     public Casilla obtenerVecinoSinVisitar() {
@@ -107,12 +135,54 @@ public class Casilla {
     }
 
     /**
-     * Obtiene la lista de vecinos que son adyacentes a la Casilla (que comparten pared)
+     * Obtiene un vecino al azar que no ha sido visitado y donde hay paso
+     * 
+     * @return
+     */
+    public Casilla obtenerVecinoDisponible() {
+        Lista<Casilla> vecinos = obtenerVecinos();
+        Random r = new Random();
+        int rango = vecinos.longitud();
+        do {
+            int posicion = r.nextInt(rango);
+            Casilla vecino = vecinos.getElemento(posicion);
+            if (!vecino.fueVisitado() && hayPaso(vecino)) {
+                return vecino;
+            } else {
+                rango--;
+                vecinos.eliminar(vecino);
+            }
+        } while (!vecinos.esVacia());
+        return new Casilla();
+    }
+
+    public boolean hayPaso(Casilla vecino) {
+
+        switch (obtenerPuntoCardinal(vecino)) {
+            case NORTE:
+                return norte;
+            case SUR:
+                return sur;
+
+            case ESTE:
+                return este;
+            case OESTE:
+                return oeste;
+            default:
+                return false;
+        }
+
+    }
+
+    /**
+     * Obtiene la lista de vecinos que son adyacentes a la Casilla (que comparten
+     * pared)
+     * 
      * @return una Lista Casillas adyacentes
      */
     public Lista<Casilla> obtenerVecinos() {
         Lista<Casilla> vecinos = new Lista<Casilla>();
-
+        
         // Se añaden las coordenadas así para poder recorrer los vecinos más fácilmente
         int[][] vecinosCoordenadas = { { y, x + 1 }, { y, x - 1 }, { y + 1, x }, { y - 1, x } };
         for (int i = 0; i < vecinosCoordenadas.length; i++) {
@@ -124,7 +194,7 @@ public class Casilla {
                 vecinos.agregar(casilla);
             } catch (IllegalArgumentException e) {
                 continue;
-            }
+            } 
         }
         return vecinos;
     }
@@ -144,9 +214,17 @@ public class Casilla {
     public void visitar() {
         this.visitada = true;
     }
-    
+
+    /**
+     * Marca a la Casilla ha su estado de no visitado
+     */
+    public void desmarcarVisitada() {
+        this.visitada = false;
+    }
+
     /**
      * Visita una Casilla adyacente si no ha sido visitada
+     * 
      * @param casilla la Casilla a visitar
      */
     public void visitar(Casilla casilla) {
@@ -170,22 +248,96 @@ public class Casilla {
             }
         }
     }
-    
+
     /**
      * Obtiene el Punto Cardinal de una Casilla adyacente
+     * 
      * @param casilla la Casilla adyacente
      * @return el Punto Cardinal
      */
     private PuntoCardinal obtenerPuntoCardinal(Casilla casilla) {
-        if (x - casilla.x == -1) {
+        if (casilla.x - x == 1) {
             return PuntoCardinal.ESTE;
-        } else if (x - casilla.x == 1) {
+        } else if (casilla.x - x == -1) {
             return PuntoCardinal.OESTE;
-        } else if (y - casilla.y == -1) {
+        } else if (casilla.y - y == 1) {
             return PuntoCardinal.NORTE;
         } else {
             return PuntoCardinal.SUR;
         }
+    }
+
+    public boolean isNorte() {
+        return norte;
+    }
+
+    public void setNorte(boolean norte) {
+        this.norte = norte;
+    }
+
+    public boolean isSur() {
+        return sur;
+    }
+
+    public void setSur(boolean sur) {
+        this.sur = sur;
+    }
+
+    public boolean isEste() {
+        return este;
+    }
+
+    public void setEste(boolean este) {
+        this.este = este;
+    }
+
+    public boolean isOeste() {
+        return oeste;
+    }
+
+    public void setOeste(boolean oeste) {
+        this.oeste = oeste;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "Casilla [este=" + este + ", norte=" + norte + ", oeste=" + oeste + ", sur=" + sur + ", visitada="
+                + visitada + ", x=" + x + ", y=" + y + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj instanceof Casilla) {
+            Casilla c = (Casilla) obj;
+            if (c.x == x && c.y == y) {
+                if (c.norte != norte || c.sur != sur) {
+                    return false;
+                }
+                if (c.este != este || c.oeste != oeste) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
 }

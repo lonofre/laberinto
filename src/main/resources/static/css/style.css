@@ -1,0 +1,92 @@
+:root {
+    --borde: rgb(124, 124, 124);
+    --camino: rgb(255, 167, 167);
+    --inicio: rgb(215, 130, 255);
+    --fin: rgb(39, 39, 39);
+}
+
+.casilla {
+    background-color: rgb(255, 255, 255);
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    border-radius: 0;
+    box-sizing: border-box;
+}
+
+.inicio {
+    color: var(--inicio);
+}
+
+.fin {
+    color: var(--fin);
+}
+
+.casilla.camino {
+    background-color: var(--camino);
+}
+
+.casilla.inicio {
+    background-color: var(--inicio);
+}
+.casilla.inicio.camino {
+    background-color: var(--inicio);
+}
+
+.casilla.fin {
+    background-color: var(--fin);
+}
+
+.casilla.fin.camino {
+    background-color: var(--fin);
+}
+
+
+
+.casilla.camino:hover {
+    background-color: #9e80d1;
+}
+
+.norte {
+    border-bottom: 3px solid var(--borde);
+}
+
+.no-norte {
+    border-bottom: 3px solid white;
+}
+.no-norte.camino {
+    border-bottom: 3px solid var(--camino);
+}
+
+.sur {
+    border-top: 3px solid var(--borde);
+    
+} 
+.no-sur {
+    border-top: 3px solid white;
+} 
+.no-sur.camino {
+    border-top: 3px solid var(--camino);
+}
+
+.oeste {
+    border-left: 3px solid var(--borde);
+}
+.no-oeste {
+    border-left: 3px solid white;
+}
+.no-oeste.camino {
+    border-left: 2px solid var(--camino);
+}
+
+.este {
+    border-right: 3px solid var(--borde);
+}
+.no-este {
+    border-right: 3px solid white;
+}
+.no-este.camino {
+    border-right: 3px solid var(--camino);
+}
+
+
