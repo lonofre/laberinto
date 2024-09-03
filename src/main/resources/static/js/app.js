@@ -64,7 +64,7 @@ let app = new Vue({
          * Establece el directorio donde se guardará la imagen
          */
         establecerDirectorio() {
-            let url = `${window.location.href}/directorio`;
+            let url = `${window.location.href}directorio`;
             let self = this;
             let data = {
                 dir: this.directorio
@@ -76,17 +76,19 @@ let app = new Vue({
                     'Content-Type': 'application/json'
                 }
             }).then(respuesta => {
-                console.log(respuesta);
                 if (respuesta.status == 200) {
                     self.habilitado = true;
                     self.obtenerLaberinto();
                     return respuesta.json();
-                }else {
+                } else {
                     self.mensajeDirectorio = 'Directorio incorrecto, inténtalo de nuevo'
+                    throw new Error()
                 }
             }).then(json => {
                 self.directorio = json.directorio;
-            })
+            }).catch(() => {
+                
+            }) 
         },
 
         /**
@@ -94,7 +96,7 @@ let app = new Vue({
          */
         obtenerLaberinto() {
             if (this.alto <= 0 || this.alto > 50 || this.ancho <= 0 || this.ancho > 50) return;
-            let url = `${window.location.href}/laberinto?alto=${this.alto}&ancho=${this.ancho}`;
+            let url = `${window.location.href}laberinto?alto=${this.alto}&ancho=${this.ancho}`;
             let self = this;
             fetch(url).then(respuesta => {
                 return respuesta.json();
@@ -106,7 +108,7 @@ let app = new Vue({
          * Crea una imagen a partir del laberinto
          */
         crearImagen() {
-            let url = `${window.location.href}/laberinto/imagen`;
+            let url = `${window.location.href}laberinto/imagen`;
             let self = this;
             fetch(url).then(respuesta => {
                 if (respuesta.ok) {
@@ -115,7 +117,7 @@ let app = new Vue({
                     self.mostrarMensaje = true;
                     setTimeout(() => {
                         self.mostrarMensaje = false;
-                    }, 3000);
+                    }, 10000);
                 }
             })
         },
@@ -160,7 +162,7 @@ let app = new Vue({
          * Crea un camino a partir de dos casillas seleccionadas
          */
         crearCamino() {
-            let url = `${window.location.href}/laberinto/camino`;
+            let url = `${window.location.href}laberinto/camino`;
             let self = this;
             let data = {
                 x1: this.inicio.x,
@@ -212,5 +214,3 @@ let app = new Vue({
     }
 
 })
-
-

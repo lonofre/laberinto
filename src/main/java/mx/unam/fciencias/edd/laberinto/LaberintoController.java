@@ -37,7 +37,7 @@ public class LaberintoController {
     /**
      * Asigna el directorio donde se va a guardar la imagen que se genere a partir del Laberinto
      * @param requestBody un JSON con atributo dir que indica el directorio donde se guardarán las imagenes creadas
-     * @returnn ResponseEntity con estatus OK si el directorio es válido, BAD_REQUEST en otro caso
+     * @return ResponseEntity con estatus OK si el directorio es válido, BAD_REQUEST en otro caso
      */
     @PostMapping(value = "/directorio", consumes = "application/json", produces = "application/json")
     public ResponseEntity<String> directorio(@RequestBody JsonNode requestBody) {
